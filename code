@@ -1,0 +1,52 @@
+#include <LedControl.h>
+
+#define DATA_IN   11  // DIN متصلة بالرقم 11
+#define CLK        13  // CLK متصلة بالرقم 13
+#define LOAD       10  // CS متصل بالرقم 10
+#define MAX_DEVICES 1  // عدد وحدات MAX7219 المتصلة
+
+// إنشاء كائن للتحكم في MAX7219
+LedControl lc = LedControl(DATA_IN, CLK, LOAD, MAX_DEVICES);
+
+// تعريف الأنماط للفم المفتوح والمغلق
+byte openMouth[8] = {
+  B00000000,
+  B00011000,
+  B00000000,
+  B00000000,
+  B00000000,
+  B00000000,
+  B00000000,
+  B00000000
+};
+
+byte closedMouth[8] = {
+  B00000000,
+  B00000000,
+  B00000000,
+  B00000000,
+  B00000000,
+  B00000000,
+  B00000000,
+  B00000000
+};
+
+void setup() {
+  lc.shutdown(0, false);       // تشغيل وحدة LED
+  lc.setIntensity(0, 8);        // تعيين السطوع (من 0 إلى 15)
+  lc.clearDisplay(0);          // مسح الشاشة
+}
+
+void loop() {
+  displayMouth(openMouth);      // عرض فم روبوت مفتوح
+  delay(1000);                  // الانتظار لمدة ثانية
+
+  displayMouth(closedMouth);    // عرض فم روبوت مغلق
+  delay(1000);                  // الانتظار لمدة ثانية
+}
+
+void displayMouth(byte pattern[]) {
+  for (int row = 0; row < 8; row++) {
+    lc.setRow(0, row, pattern[row]); // تعيين البيانات لكل صف في المصفوفة
+  }
+}
